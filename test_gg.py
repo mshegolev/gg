@@ -25,6 +25,12 @@ class Test_login(unittest.TestCase):
         wd = self.wd
         self.open_home_page(wd)
         self.login(wd, username="+79216527446", password="1QAZ!qaz")
+        self.add_company(wd)
+        self.choose_business_entity_type(wd, "Индивидуальный предприниматель")
+        self.input_inn(wd, "111111111111")
+        self.input_ogrn(wd, "012345678912345")
+        self.input_email(wd, "atolonline0@gmail.com")
+        self.input_phone(wd, "+71234567788")
         self.logout(wd)
 
     def logout(self, wd):
@@ -34,12 +40,35 @@ class Test_login(unittest.TestCase):
                 wd.find_element_by_xpath("//ul[@class='dropdown-menu']//a[.='Выход']").click()
 
     def add_company(self, wd):
-        wd.find_element_by_xpath(
-            'normalize-space(//span[@class="flat-button-content"]/text()["Добавить компанию"])').click()
+        wd.find_element_by_xpath("//span[@class=\"flat-button-content\"]/text()[\"Добавить компанию\"]/..").click()
 
-    def choose_business_entity_type(self, wd):
+    def choose_business_entity_type(self, wd, business_entity):
         wd.find_element_by_xpath(
             '//div[@class="form-group form-group-sm"]/label[@for="BusinessEntityType"]/..//button').click()
+        # todo: add checking
+        wd.find_element_by_xpath(
+            '//div[@class="col-sm-6"]//ul[@class="multiselect-container dropdown-menu"]'
+            '//label[@class="radio" and @title="' + business_entity + '"]').click()
+
+    def input_inn(self, wd, inn):
+        wd.find_element_by_id("INN-2").click()
+        wd.find_element_by_id("INN-2").clear()
+        wd.find_element_by_id("INN-2").send_keys(inn)
+
+    def input_ogrn(self, wd, ogrn):
+        wd.find_element_by_id("OGRN-2").click()
+        wd.find_element_by_id("OGRN-2").clear()
+        wd.find_element_by_id("OGRN-2").send_keys(ogrn)
+
+    def input_phone(self, wd, phone):
+        wd.find_element_by_id("Phone").click()
+        wd.find_element_by_id("Phone").clear()
+        wd.find_element_by_id("Phone").send_keys(phone)
+
+    def input_email(self, wd, email):
+        wd.find_element_by_id("EMail").click()
+        wd.find_element_by_id("EMail").clear()
+        wd.find_element_by_id("EMail").send_keys(email)
 
     def login(self, wd, username, password):
         wd.find_element_by_id("Login").click()
