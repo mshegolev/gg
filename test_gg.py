@@ -2,6 +2,8 @@
 import unittest
 
 from selenium.webdriver.firefox.webdriver import WebDriver
+from credentional import Credentional
+from business import Business
 
 
 def is_alert_present(wd):
@@ -24,13 +26,16 @@ class Test_login(unittest.TestCase):
     def test_login(self):
         wd = self.wd
         self.open_home_page(wd)
-        self.login(wd, username="+79216527446", password="1QAZ!qaz")
-        self.add_company(wd)
-        self.choose_business_entity_type(wd, "Индивидуальный предприниматель")
-        self.input_inn(wd, "111111111111")
-        self.input_ogrn(wd, "012345678912345")
-        self.input_email(wd, "atolonline0@gmail.com")
-        self.input_phone(wd, "+71234567788")
+        self.login(wd, Credentional(username="+79216527446", password="1QAZ!qaz"))
+        self.add_company(wd, Business(inn="111111111111", ogrn="012345678912345", phone="+71234567788", email="atolonline0@gmail.com"))
+        self.logout(wd)
+
+    def test_login_store2(self):
+        wd = self.wd
+        self.open_home_page(wd)
+        self.login(wd, Credentional(username="+79216527446", password="1QAZ!qaz"))
+        self.add_company(wd, Business(inn="222222222222", ogrn="012345678912345", phone="+71234567799",
+                                      email="atolonline2@gmail.com"))
         self.logout(wd)
 
     def logout(self, wd):
@@ -39,8 +44,13 @@ class Test_login(unittest.TestCase):
             if wd.find_element_by_xpath("//ul[@class='dropdown-menu']//a[.='Выход']").is_displayed():
                 wd.find_element_by_xpath("//ul[@class='dropdown-menu']//a[.='Выход']").click()
 
-    def add_company(self, wd):
+    def add_company(self, wd, business):
         wd.find_element_by_xpath("//span[@class=\"flat-button-content\"]/text()[\"Добавить компанию\"]/..").click()
+        self.choose_business_entity_type(wd, "Индивидуальный предприниматель")
+        self.input_inn(wd, business.inn)
+        self.input_ogrn(wd, business.ogrn)
+        self.input_email(wd, business.email)
+        self.input_phone(wd, business.phone)
 
     def choose_business_entity_type(self, wd, business_entity):
         wd.find_element_by_xpath(
@@ -70,13 +80,13 @@ class Test_login(unittest.TestCase):
         wd.find_element_by_id("EMail").clear()
         wd.find_element_by_id("EMail").send_keys(email)
 
-    def login(self, wd, username, password):
+    def login(self, wd, credentional):
         wd.find_element_by_id("Login").click()
         wd.find_element_by_id("Login").clear()
-        wd.find_element_by_id("Login").send_keys(username)
+        wd.find_element_by_id("Login").send_keys(credentional.username)
         wd.find_element_by_id("Password").click()
         wd.find_element_by_id("Password").clear()
-        wd.find_element_by_id("Password").send_keys(password)
+        wd.find_element_by_id("Password").send_keys(credentional.password)
         wd.find_element_by_xpath('//input[@value="Вход"]').click()
 
     def open_home_page(self, wd):
